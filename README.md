@@ -15,7 +15,8 @@
 
 ### Project Overview
 
-This project was conducted during a Sports Analytics course (STOR 538) at The University of North Carolina at Chapel Hill throughout the Spring semester of 2023. While this project was a collaborative task, I was responsible for all programming aspects of the assignment. This was a predictive modeling project for actual NBA games (all games between April 4 and April 9 of 2023), with the primary goal of designing models for the prediction of three variables – Spread, Total, and OREB. Below you can find clear definitions of these outcome variables:
+This project was undertaken as part of the Sports Analytics course (STOR 538) at The University of North Carolina at Chapel Hill during the Spring semester of 2023. While the project was collaborative, I assumed responsibility for all programming aspects. The objective was to develop predictive models for real NBA games played between April 4 and April 9 of 2023, focusing on three key variables: Spread, Total, and OREB. For clarity, these variables are defined as follows:
+
 - Spread = Home Points - Away Points
 - Total = Home Points + Away Points
 - OREB = Home OREB + Away  OREB
@@ -23,31 +24,41 @@ This project was conducted during a Sports Analytics course (STOR 538) at The Un
 
 ### Data Sources
 
-Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/datasets/nathanlauga/nba-games) data set, which includes observations for each NBA game from the 2003-2004 season to December 22 of the 2022-2023 season. 
-
- 
+Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/datasets/nathanlauga/nba-games) dataset,  covering NBA game observations from the 2003-2004 season through December 22 of the 2022-2023 season. Recognizing the need for supplementary data, we incorporated two additional datasets, also compiled by Nathan Lauga. The [games_details](https://www.kaggle.com/datasets/nathanlauga/nba-games?select=games_details.csv) dataset provided valuable insights, including OREB and other potentially useful variables. Additionally, we utilized the [ranking](https://www.kaggle.com/datasets/nathanlauga/nba-games?select=ranking.csv) dataset to integrate a win percentage variable (WIN_PCT) for both home and away teams in each game.
 
 ### Tools
 
 ### Data Cleaning/Preparation
 
-For the *games* data set, we kept all variables except GAME_STATUS_TEXT and HOME_TEAM_WINS because they didn’t have potential for importance in data collection or predicting Total, Spread, or OREB.
+- #### Variable Removal
+  - ***games* dataset**: retained all variables except GAME_STATUS_TEXT and HOME_TEAM_WINS due to their lack of potential significance in data collection or predicting Total, Spread, or OREB.
+  - ***games_details* dataset**: removed all variables except FGA, FG3A, FTA, OREB, STL, BLK, TO, and PF as they were deemed essential for analysis.
+  - ***ranking* dataset**: retained HOME_RECORD and ROAD_RECORD variables for further analysis.
+  
+- #### Outcome Variable Creation
+  - **Total and Spread**: Using data from the *games* dataset, the Total variable was derived by summing PTS_away and PTS_home, while the Spread variable was calculated by subtracting PTS_away from PTS_home.
+  - **OREB**: While the necessary elements to create the OREB variable were absent in the *games* dataset, the *games_details* dataset possesses an OREB variable. However, the *games_details* dataset records observations at the player level, unlike the *games* dataset, which contains observations at the team level. To reconcile this disparity, the player-level stats for each team and game ID were aggregated by summing them, thus converting the dataset to team-level observations.
 
-- Then we created variables for Total and Spread, adding PTS_away to PTS_home for Total and subtracting PTS_away from PTS_home for Spread.
+- #### Data Merging
+  - ***games_details* dataset integration**: merged into the *games* dataset by matching GAME_ID and TEAM_ID
+  - ***ranking* dataset integration**: merged into the *games* dataset by matching the team ID and date of each observation
+    
+- #### Observation Removal
+  - **Shifts in NBA Style of Play**: Recognizing the evolution of NBA basketball with a diminished emphasis on traditional "Big Man" roles and an increased prominence of point guards as scoring threats, all data before the 2010 season was removed to account for Stephen Curry's influential transition into the league.
+  - **Impact of COVID-19**: Data from the 2020 and 2021 NBA seasons was excluded to accommodate the environmental impact of COVID-19 on NBA games.
+  - **Playoff Game Removal**: Playoff game data was omitted due to the significantly higher intensity and specialized preparation involved, which could potentially skew the analysis.
+  - **Pre-Trade Deadline Focus**: Observations before February of each season were disregarded to capture team composition changes post-trade deadline, typically occurring in early February.
+  - **Handling Missing Values**: Any missing values were removed to ensure data integrity and consistency.
 
-- It was apparent that the OREB variable wasn’t included in this data set, which was troubling because observations for OREB is necessary if we are going to create models predicting the variable. However, the [games_details](https://www.kaggle.com/datasets/nathanlauga/nba-games?select=games_details.csv) data set, also created by Nathan Lauga, included values for OREB and other potentially useful variables.
+- #### Feature Engineering
 
-*games_details*: contains observations for each game on the player level, unlike the *games* data set
-- Convert this data set into team level observations per game, the sum of player level stats were taken for all players with the same team and game ID.
-- Selected eight variables from this data set we thought had potential for our predictions
-  - FGA, FG3A, FTA, OREB, STL, BLK, TO, and PF
 
-- Merged the eight predictors from our cleaned *games_details* data set into our *games* data set by matching GAME_ID and TEAM_ID. However, the games_details data did not have the GAME_ID variable split into home and away teams like the games data set, so we had to temporarily rename the HOME_TEAM_ID variable in games to TEAM_ID to match the game identification variable in the games_details data set. After renaming the variable, we were able to successfully merge the data by TEAM_ID and GAME_ID. The TEAM_ID variable in the games dataset was then renamed back to HOME_TEAM_ID. This same process was repeated to gather away team data.
-- A similar process was used to add the W_PCT variable from Nathan Lauga's [ranking](https://www.kaggle.com/datasets/nathanlauga/nba-games?select=ranking.csv) data set to the *games* data set. W_PCT was added my merging *games* and *ranking* by team id and date of each observation
-- The shift of style of play in NBA basketball was accounted for, acknowledging the diminished importance of the traditional "Big Man" and increased role of point guards as prominent scoring threats. Accrediting Stephen Curry's influence on this transition, we decided to remove all data prior to the 2010 season, which marks the year Curry was introduced to the league.
-- Data was also removed from the 2020 and 2021 NBA seasons to account for impact of COVID on environment of NBA games
-- Playoff game data was removed as those games are played at a much higher instensity wherre teams go into the series with greater preparation for their specific opponent
-- All observations before February of each season were ignored with the though that team composition changes throughout the year, so we focused specifically on data after the trade deadline which typically occurs in early February
-- Removed missing values if they were to exist
 
-Engine
+- Engineered Variables:
+  For each variable we created, it's important to note that we created one for the home team and one for the away team
+  - Created a possessions variable (POSS) to determine the number of possessions a team has throughout a game. This variable was calculated as
+    POSS = 0.96 * (FGA + TO + 0.44 * FTA - OREB). The .96 is used to account for the fact that some possessions end in offensive rebounds, and not in turnovers or missed field goals. This formula is widely used to calculate possessions if the exact number is not known. The portion in parentheses should be familiar as part of Dean Oliver’s calculation of turnover percentage.
+- Calculated a W_PCT variable by combining the HOME_RECORD and ROAD_RECORD variables in the *ranking* data set
+
+
+  
