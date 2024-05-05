@@ -51,7 +51,12 @@ Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/d
   - **Handling Missing Values**: Any missing values were removed to ensure data integrity and consistency.
 
 - #### Feature Engineering
-
+  - **Possessions (POSS)**: Created to determine the number of possessions a team has throughout a game, this variable was calculated as POSS = 0.96 * (FGA + TO + 0.44 * FTA - OREB). The .96 is used to account for the fact that some possessions end in offensive rebounds, and not in turnovers or missed field goals. This formula is widely used to calculate possessions if the exact number is not known. The portion in parentheses should be familiar as part of Dean Oliver’s calculation of turnover percentage.
+  - **Win Percentage (WIN_PCT)**: This factor was calculated by combining the HOME_RECORD and AWAY_RECORD variables
+  - **Effective Field Goal Percentage (eFG_PCT)**: Using Dean Oliver’s Four Factors of Basketball, this variable was calculates using (FGM + .5*3FGM) + FGA
+  - **Turnover Percentage (TO_PCT)**: TO/POSS
+  - **Defensive Rebound Percentage (DREB_PCT)**: DREB / (DREB + Opp OREB)
+  - 
 
 
 - Engineered Variables:
@@ -59,6 +64,13 @@ Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/d
   - Created a possessions variable (POSS) to determine the number of possessions a team has throughout a game. This variable was calculated as
     POSS = 0.96 * (FGA + TO + 0.44 * FTA - OREB). The .96 is used to account for the fact that some possessions end in offensive rebounds, and not in turnovers or missed field goals. This formula is widely used to calculate possessions if the exact number is not known. The portion in parentheses should be familiar as part of Dean Oliver’s calculation of turnover percentage.
 - Calculated a W_PCT variable by combining the HOME_RECORD and ROAD_RECORD variables in the *ranking* data set
+
+
+### Data Modeling
+
+### Calculation Mehtod
+
+### Predictions
 
 
   
