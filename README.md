@@ -24,7 +24,7 @@ This project was undertaken as part of the Sports Analytics course (STOR 538) at
 
 ### Data Sources
 
-Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/datasets/nathanlauga/nba-games) dataset,  covering NBA game observations from the 2003-2004 season through December 22 of the 2022-2023 season. Recognizing the need for supplementary data, we incorporated two additional datasets, also compiled by Nathan Lauga. The [games_details](https://www.kaggle.com/datasets/nathanlauga/nba-games?select=games_details.csv) dataset provided valuable insights, including OREB and other potentially useful variables. Additionally, we utilized the [ranking](https://www.kaggle.com/datasets/nathanlauga/nba-games?select=ranking.csv) dataset to integrate a win percentage variable (WIN_PCT) for both home and away teams in each game.
+Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/datasets/nathanlauga/nba-games) dataset,  covering NBA game observations from the 2003-2004 season through December 22 of the 2022-2023 season. Recognizing the need for supplementary data, we incorporated two additional datasets, also compiled by Nathan Lauga. The [games_details](https://www.kaggle.com/datasets/nathanlauga/nba-games?select=games_details.csv) dataset provided valuable insights, including OREB and other potentially useful variables. Additionally, we utilized the [ranking](https://www.kaggle.com/datasets/nathanlauga/nba-games?select=ranking.csv) dataset to integrate a win percentage variable (WIN_PCT) for both home and away teams in each game. Another data set [Additional Data Source](#additional-data-source)
 
 ### Tools
 
@@ -70,6 +70,10 @@ Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/d
    <img width="483" alt="Screenshot 2024-05-06 at 11 35 45 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/505c15ef-6758-4b08-bcaa-80c0b899bf6d">
    
    *Note: "VAR" is replaced with the specified potential predictor.
+
+- #### Additional Data Source
+
+- [teamrankings.com](https://www.teamrankings.com/nba/team-stats/)  
 
 ### Data Modeling
 
