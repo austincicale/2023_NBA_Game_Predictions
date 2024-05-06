@@ -61,14 +61,25 @@ Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/d
   For our predictive modeling, we carefully selected potential variables believed to be valuable predictors of Spread, Total, and OREB. These predictors were chosen based on their relevance and significance in previous basketball analytics research. Below are the selected potential predictors:
   
   <img width="540" alt="Screenshot 2024-05-06 at 11 09 29 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/2ea5ff9e-9632-4e1b-a21e-08bb510c3eef">
+  
   *Note: To distinguish between home and away teams, each variable is accompanied by a suffix: _H for the home team and _A for the away team.
 
+- #### Aggregated Variables for Selected Potential Predictors
+  To facilitate predictive modeling for future NBA games, we constructed lag variables representing historical averages for each selected potential predictor. These lag variables offer insights into team performance trends over time. For each predictor, we generated the following aggregated variables:
+
+   <img width="483" alt="Screenshot 2024-05-06 at 11 35 45 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/505c15ef-6758-4b08-bcaa-80c0b899bf6d">
+   
+   *Note: "VAR" is replaced with the specified potential predictor.
 
 ### Data Modeling
 
 ### Calculation Mehtod
 
 ### Predictions
+
+### References
+
+[youtube](https://www.youtube.com/watch?v=U7r_QVcBmBE)
 
 
   
