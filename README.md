@@ -24,7 +24,7 @@ This project was undertaken as part of the Sports Analytics course (STOR 538) at
 
 ### Data Sources
 
-Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/datasets/nathanlauga/nba-games) dataset,  covering NBA game observations from the 2003-2004 season through December 22 of the 2022-2023 season. Recognizing the need for supplementary data, we incorporated two additional datasets, also compiled by Nathan Lauga. The [games_details](https://www.kaggle.com/datasets/nathanlauga/nba-games?select=games_details.csv) dataset provided valuable insights, including OREB and other potentially useful variables. Additionally, we utilized the [ranking](https://www.kaggle.com/datasets/nathanlauga/nba-games?select=ranking.csv) dataset to integrate a win percentage variable (WIN_PCT) for both home and away teams in each game. Another data set [Additional Data Source](#additional-data-source)
+Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/datasets/nathanlauga/nba-games) dataset,  covering NBA game observations from the 2003-2004 season through December 22 of the 2022-2023 season. Recognizing the need for supplementary data, we incorporated two additional datasets, also compiled by Nathan Lauga. The [games_details](https://www.kaggle.com/datasets/nathanlauga/nba-games?select=games_details.csv) dataset provided valuable insights, including OREB and other potentially useful variables. Additionally, we utilized the [ranking](https://www.kaggle.com/datasets/nathanlauga/nba-games?select=ranking.csv) dataset to integrate a win percentage variable (WIN_PCT) for both home and away teams in each game. Updated team statistics for the 2022-2023 season were used to make our final predictions, as further explained in the [Additional Data Source](#additional-data-source) section.
 
 ### Tools
 
@@ -72,8 +72,15 @@ Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/d
    *Note: "VAR" is replaced with the specified potential predictor.
 
 - #### Additional Data Source
+  In addition to our primary dataset, we collected supplementary data from [teamrankings.com](https://www.teamrankings.com/nba/team-stats/). This dataset encompasses NBA team data for each date of the 2022-2023 season. Specifically, it includes comprehensive data for all of our selected potential predictors, categorized by team and providing the following metrics:
+  - Yearly average
+  - Last 3 game average
+  - Last game performance
+  - Home game average
+  - Away game average
+  - Previous year average
 
-- [teamrankings.com](https://www.teamrankings.com/nba/team-stats/)  
+  After the games of April 2, 2023, the updated data from teamrankings.com was used to calculate our predictions for the games scheduled from April 4 to April 9.
 
 ### Data Modeling
 
