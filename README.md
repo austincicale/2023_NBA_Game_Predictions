@@ -50,20 +50,18 @@ Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/d
   - **Pre-Trade Deadline Focus**: Observations before February of each season were disregarded to capture team composition changes post-trade deadline, typically occurring in early February.
   - **Handling Missing Values**: Any missing values were removed to ensure data integrity and consistency.
 
-- #### Feature Engineering
-  - **Possessions (POSS)**: Created to determine the number of possessions a team has throughout a game, this variable was calculated as POSS = 0.96 * (FGA + TO + 0.44 * FTA - OREB). The .96 is used to account for the fact that some possessions end in offensive rebounds, and not in turnovers or missed field goals. This formula is widely used to calculate possessions if the exact number is not known. The portion in parentheses should be familiar as part of Dean Oliver’s calculation of turnover percentage.
-  - **Win Percentage (WIN_PCT)**: This factor was calculated by combining the HOME_RECORD and AWAY_RECORD variables
-  - **Effective Field Goal Percentage (eFG_PCT)**: Using Dean Oliver’s Four Factors of Basketball, this variable was calculates using (FGM + .5*3FGM) + FGA
-  - **Turnover Percentage (TO_PCT)**: TO/POSS
-  - **Defensive Rebound Percentage (DREB_PCT)**: DREB / (DREB + Opp OREB)
-  - 
+- #### Engineered Variables
+  - **Possessions (POSS)**: Quantifying the number of possessions a team has throughout a game, this variable is calculated using the formula: POSS = 0.96 * (FGA + TO + 0.44 * FTA - OREB). The coefficient of 0.96 adjusts for the instances where possessions end in offensive rebounds rather than turnovers or missed field goals. This formula, widely attributed to [Dean Oliver](http://www.basketballonpaper.com/), is a standard method for estimating possessions when the exact count is unavailable. Notably, the expression within the parentheses is a familiar component of Oliver’s turnover percentage calculation, which can be found [here](https://www.basketball-reference.com/about/factors.html).
+  - **Win Percentage (WIN_PCT)**: This variable reflects the win percentage of both the home and away teams prior to each game observation. It was derived from the HOME_RECORD and AWAY_RECORD variables by dividing the number of wins by the sum of wins and losses.
+  - **Effective Field Goal Percentage (eFG_PCT)**: Following Dean Oliver’s [Four Factors of Basketball](https://www.basketball-reference.com/about/factors.html), this variable was calculated using the formula (FGM + 0.5 * 3FGM) / FGA. It measures the effectiveness of a team's shooting by accounting for the added value of three-pointers.
+  - **Turnover Percentage (TO_PCT)**: This variable represents the turnover percentage of a team and was calculated by dividing turnovers (TO) by possessions (POSS). It provides insight into a team's ability to maintain possession of the ball.
+  - **Defensive Rebound Percentage (DREB_PCT)**: This variable indicates the proportion of available defensive rebounds a team secures and was calculated by dividing defensive rebounds (DREB) by the sum of defensive rebounds and opponent offensive rebounds (Opp OREB). It offers insights into a team's defensive rebounding efficiency.
 
-
-- Engineered Variables:
-  For each variable we created, it's important to note that we created one for the home team and one for the away team
-  - Created a possessions variable (POSS) to determine the number of possessions a team has throughout a game. This variable was calculated as
-    POSS = 0.96 * (FGA + TO + 0.44 * FTA - OREB). The .96 is used to account for the fact that some possessions end in offensive rebounds, and not in turnovers or missed field goals. This formula is widely used to calculate possessions if the exact number is not known. The portion in parentheses should be familiar as part of Dean Oliver’s calculation of turnover percentage.
-- Calculated a W_PCT variable by combining the HOME_RECORD and ROAD_RECORD variables in the *ranking* data set
+- #### Selected Potential Predictors
+  For our predictive modeling, we carefully selected potential variables believed to be valuable predictors of Spread, Total, and OREB. These predictors were chosen based on their relevance and significance in previous basketball analytics research. Below are the selected potential predictors:
+  
+  <img width="540" alt="Screenshot 2024-05-06 at 11 09 29 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/2ea5ff9e-9632-4e1b-a21e-08bb510c3eef">
+  *Note: To distinguish between home and away teams, each variable is accompanied by a suffix: _H for the home team and _A for the away team.
 
 
 ### Data Modeling
