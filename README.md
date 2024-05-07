@@ -94,6 +94,20 @@ The following steps provide an overview of the methodology used to create predic
 
 ### Modeling Results
 
+- **Spread**
+  
+  <img width="720" alt="Screenshot 2024-05-07 at 2 04 30 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/8a92473d-e4ce-401a-8671-98664a736f70">
+    <img width="633" alt="Screenshot 2024-05-07 at 2 03 56 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/b64a53af-e2d9-46db-8034-15adceadec43">
+  
+- **Total**
+  
+  <img width="669" alt="Screenshot 2024-05-07 at 2 05 42 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/06241b75-a903-43e4-ba55-0d5157b8a126">
+    <img width="583" alt="Screenshot 2024-05-07 at 2 06 11 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/86142993-ad93-44f1-ad08-3fdbb2e806b7">
+
+- **OREB**
+  <img width="689" alt="Screenshot 2024-05-07 at 2 07 19 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/ca539489-cee0-4e2d-872e-a4904e59fd1a">
+    <img width="577" alt="Screenshot 2024-05-07 at 2 07 42 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/006498cf-a05a-465d-864e-1194e0b7f013">
+
 ### Calculation Method
 
 ### Predictions
