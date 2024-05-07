@@ -9,6 +9,7 @@
 - [Predictive Modeling](#predictive-modeling)
 - [Modeling Results](#modeling-results)
 - [Calculation Method](#calculation-method)
+- [Predictions Analysis](#predictions-analysis)
 - [Recommendations](#recommendations)
 - [Limitations](#limitations)
 - [References](#references)
@@ -93,25 +94,68 @@ The following steps provide an overview of the methodology used to create predic
 5. **Final Model Creation with LASSO Cross-validation**: A final model was created using aggregate values for the identified good predictors, employing LASSO cross-validation. The coefficients from these models were utilized to make our final predictions.
 
 ### Modeling Results
+This section provides an overview of the results obtained from our predictive modeling for Spread, Total, and OREB. Below are the coefficients for each final model, Actual vs Predicted plots, and Root Mean Squared Error (RMSE) values. These insights offer an understanding of the accuracy and performance of our predictive models.
 
-- **Spread**
-  
-  <img width="720" alt="Screenshot 2024-05-07 at 2 04 30 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/8a92473d-e4ce-401a-8671-98664a736f70">
+- **Spread:**
+  - **Coefficients:**
+
     <img width="633" alt="Screenshot 2024-05-07 at 2 03 56 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/b64a53af-e2d9-46db-8034-15adceadec43">
+
+  - **Actual vs Predicted Plot:**
+
+  <img width="720" alt="Screenshot 2024-05-07 at 2 04 30 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/8a92473d-e4ce-401a-8671-98664a736f70">
+ 
+  - **RMSE:** 12.8276
   
-- **Total**
+- **Total:**
+  - **Coefficients:**
   
-  <img width="669" alt="Screenshot 2024-05-07 at 2 05 42 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/06241b75-a903-43e4-ba55-0d5157b8a126">
     <img width="583" alt="Screenshot 2024-05-07 at 2 06 11 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/86142993-ad93-44f1-ad08-3fdbb2e806b7">
 
-- **OREB**
-  <img width="689" alt="Screenshot 2024-05-07 at 2 07 19 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/ca539489-cee0-4e2d-872e-a4904e59fd1a">
+  - **Actual vs Predicted Plot:**
+    
+  <img width="669" alt="Screenshot 2024-05-07 at 2 05 42 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/06241b75-a903-43e4-ba55-0d5157b8a126">
+
+   - **RMSE:** 18.9079
+
+- **OREB:**
+  - **Coefficients:**
+
     <img width="577" alt="Screenshot 2024-05-07 at 2 07 42 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/006498cf-a05a-465d-864e-1194e0b7f013">
 
+  - **Actual vs Predicted Plot:**
+  
+  <img width="689" alt="Screenshot 2024-05-07 at 2 07 19 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/ca539489-cee0-4e2d-872e-a4904e59fd1a">
+    
+  - **RMSE:** 5.4176
+    
 ### Calculation Method
 
-### Predictions
-The predictions for Spread, Total, and OREB for all NBA games between April 4 and April 9, 2023, can be found [here](Predictions.csv).
+In this section, I outline the method used to generate predictions for Spread, Total, and OREB. The process involved utilizing Excel / Google Sheets and the coefficients obtained from our previous predictive models.
+
+- #### Data Import and Setup:
+  - Each variable's data was imported from teamrankings.com into separate sheets using the IMPORTHTML function in Google Sheets. The data was refreshed before making final predictions.
+  - The first six rows of the first sheet resembled the following:
+    <img width="693" alt="Screenshot 2024-05-07 at 11 19 23 AM" src="https://github.com/austincicale/2023_NBA_Game_Predictions/assets/77798880/4c1aebc9-cf54-43ad-90ae-13cf5d02b5a3">
+   - Each variable is listed in column A, data imported from teamrankings.com is listed in columns B and C, and the coefficients for the Total model are listed in columns D and E, corresponding to Home and Away respectively.
+  - Similar to Total, the coefficients for Spread and OREB were listed in columns for Home and Away, but they are not listed in the image above due to space.
+  - If a coefficient was not used in a particular model, the "Weight" was set to 0. 
+
+- #### Calculation Process:
+  - Columns B and C utilized Excel's VLOOKUP function to search for the corresponding value based on the team name from the relevant variable's sheet.
+  - For instance, B5 looked for "Charlotte" in the 'Possessions Per Game' sheet and returned the value in the 4th column, representing the Last 3 data provided by teamrankings.com.
+  - To calculate the predictions for Total, each value in column B was multiplied by the corresponding coefficient in column D, and each value in column C was multiplied by the corresponding coefficient in column E. The results from these multiplications were added together to obtain the predictions for Total.
+  - An identical process was used to calculate predictions for Spread and OREB.
+
+### Predictions Analysis
+Once we obtained predictions for each of the three outcome variables, we thoroughly analyzed historical data to determine if any revisions were necessary. For instance, when examining our Spread predictions, we calculated the average spread across all our predictions.
+
+Our Spread model initially projected that all home games would win by an average of 5.5056, marking an increase of 2.7923 from the average spread of 2.7133 observed across the rest of the 2022-23 season. However, upon reviewing historical data dating back to 2010, we found that the spread increased by only 0.1066 in April compared to other months.
+
+Based on this analysis, we concluded that our model tends to overestimate home advantage by 2.6857 (2.7133 - 0.1066). To rectify this discrepancy, we adjusted our spread predictions accordingly by subtracting 2.6857 from each spread. As a result, our final spread predictions now range from -7.45 to 12.83, with an average of 2.82.
+
+Similar adjustments were made to account for overestimations in our Total and OREB predictions. Our final predictions for Spread, Total, and OREB for all NBA games between April 4 and April 9, 2023, can be found [here](Predictions.csv).
+
 
 ### Recommendations
 
