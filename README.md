@@ -7,7 +7,8 @@
 - [Tools](#tools)
 - [Data Cleaning/Preparation](#data-cleaningpreparation)
 - [Predictive Modeling](#predictive-modeling)
-- [Results/Findings](#resultsfindings)
+- [Modeling Results](#modeling-results)
+- 
 - [Recommendations](#recommendations)
 - [Limitations](#limitations)
 - [References](#references)
@@ -91,9 +92,15 @@ The following steps provide an overview of the methodology used to create predic
 4. **Refinement with Aggregate Variables**: Bi-directional stepwise progression was applied again, this time using aggregate values for the variables identified as good predictors in the previous step. Outliers were checked by analyzing studentized and standardized residuals, leverage values, and Cook's distance. After ensuring no significant outliers, the model was cross-validated to assess its accuracy in predicting the testing data.
 5. **Final Model Creation with LASSO Cross-validation**: A final model was created using aggregate values for the identified good predictors, employing LASSO cross-validation. The coefficients from these models were utilized to make our final predictions.
 
-### Calculation Methos
+### Modeling Results
+
+### Calculation Methods
 
 ### Predictions
+
+### Recommendations
+
+### Limitations
 
 ### References
 
