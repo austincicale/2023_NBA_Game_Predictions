@@ -6,8 +6,7 @@
 - [Data Sources](#data-sources)
 - [Tools](#tools)
 - [Data Cleaning/Preparation](#data-cleaningpreparation)
-- [Exploratory Data Analysis (EDA)](#exploratory-data-analysis-eda)
-- [Data Analysis](#data-analysis)
+- [Predictive Modeling](#predictive-modeling)
 - [Results/Findings](#resultsfindings)
 - [Recommendations](#recommendations)
 - [Limitations](#limitations)
@@ -82,9 +81,17 @@ Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/d
 
   After the games of April 2, 2023, the updated data from teamrankings.com was used to calculate our predictions for the games scheduled from April 4 to April 9.
 
-### Data Modeling
+### Predictive Modeling
 
-### Calculation Mehtod
+The following steps provide an overview of the methodology used to create predictive models for Spread, Total, and OREB:
+
+1. **Data Splitting**: The cleaned data was divided into training and testing sets. The training data consisted of all games that occurred in February or March, while the testing data included all games in April. The data was split this way to ensure the models could properly predict April games after being trained to predict games in February and March, since the game outcomes being predicted in this project are those occurring in April. (ADD CODE)
+2. **Bi-directional Stepwise Progression**: We applied bi-directional stepwise progression on the training set to identify potential independent variables. All non-aggregate variables were considered as potential predictors.
+3. **Cross-validation and Model Evaluation**: The model identified in step 2 was cross-validated on the testing data to ensure accurate predictions. We analyzed the mean, variability, and normality conditions to assess the model's performance. Additionally, the shrinkage value was closely examined to ensure model reliability.
+4. **Refinement with Aggregate Variables**: Bi-directional stepwise progression was applied again, this time using aggregate values for the variables identified as good predictors in the previous step. Outliers were checked by analyzing studentized and standardized residuals, leverage values, and Cook's distance. After ensuring no significant outliers, the model was cross-validated to assess its accuracy in predicting the testing data.
+5. **Final Model Creation with LASSO Cross-validation**: A final model was created using aggregate values for the identified good predictors, employing LASSO cross-validation. The coefficients from these models were utilized to make our final predictions.
+
+### Calculation Methos
 
 ### Predictions
 
