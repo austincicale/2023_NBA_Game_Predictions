@@ -8,7 +8,7 @@
 - [Data Cleaning/Preparation](#data-cleaningpreparation)
 - [Predictive Modeling](#predictive-modeling)
 - [Modeling Results](#modeling-results)
-- 
+- [Calculation Method](#calculation-method)
 - [Recommendations](#recommendations)
 - [Limitations](#limitations)
 - [References](#references)
@@ -94,9 +94,10 @@ The following steps provide an overview of the methodology used to create predic
 
 ### Modeling Results
 
-### Calculation Methods
+### Calculation Method
 
 ### Predictions
+The predictions for Spread, Total, and OREB for all NBA games between April 4 and April 9, 2023, can be found [here](Predictions.csv).
 
 ### Recommendations
 
