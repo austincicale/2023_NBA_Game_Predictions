@@ -10,8 +10,6 @@
 - [Modeling Results](#modeling-results)
 - [Calculation Method](#calculation-method)
 - [Predictions Analysis](#predictions-analysis)
-- [Recommendations](#recommendations)
-- [Limitations](#limitations)
 - [References](#references)
 
 ### Project Overview
@@ -156,14 +154,9 @@ Based on this analysis, we concluded that our model tends to overestimate home a
 
 Similar adjustments were made to account for overestimations in our Total and OREB predictions. Our final predictions for Spread, Total, and OREB for all NBA games between April 4 and April 9, 2023, can be found [here](Predictions.csv).
 
-
-### Recommendations
-
-### Limitations
-
 ### References
 
-- YouTube: [How to Build a Sports Betting Model for NBA Against the Spread and Totals](https://www.youtube.com/watch?v=U7r_QVcBmBE)
-- Research: Dean Oliver's [Four Factors of Basketball Success](https://www.basketball-reference.com/about/factors.html)
+- YouTube Video: [How to Build a Sports Betting Model for NBA Against the Spread and Totals](https://www.youtube.com/watch?v=U7r_QVcBmBE)
+- Book: [Basketball on Paper](http://www.basketballonpaper.com/) by Dean Oliver
 
   
