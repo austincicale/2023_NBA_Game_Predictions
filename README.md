@@ -27,6 +27,18 @@ Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/d
 
 ### Tools
 
+- **[R](https://www.r-project.org/about.html)**:
+  - Data cleaning/merging
+  - Feature engineering
+  - Model development
+  - Cross-validation and model evaluation
+  - Data visualization
+
+- **[Excel](https://www.microsoft.com/en-us/microsoft-365/excel) / [Google Sheets](https://www.google.com/sheets/about/)**:
+  - Importing data
+  - Creating a sports betting model
+  - Calculating final predictions
+
 ### Data Cleaning/Preparation
 
 - #### Variable Removal
@@ -213,7 +225,7 @@ In this section, I outline the method used to generate predictions for Spread, T
   - An identical process was used to calculate predictions for Spread and OREB.
 
 ### Predictions Analysis
-Once we obtained predictions for each of the three outcome variables, we thoroughly analyzed historical data to determine if any revisions were necessary. For instance, when examining our Spread predictions, we calculated the average spread across all our predictions.
+Once we obtained predictions for the three outcome variables, we thoroughly analyzed historical data to determine if any revisions were necessary. For instance, when examining our Spread predictions, we calculated the average spread across all our predictions.
 
 Our Spread model initially projected that all home games would win by an average of 5.5056, marking an increase of 2.7923 from the average spread of 2.7133 observed across the rest of the 2022-23 season. However, upon reviewing historical data dating back to 2010, we found that the spread increased by only 0.1066 in April compared to other months.
 
