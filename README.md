@@ -70,6 +70,45 @@ Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/d
    
    *Note: "VAR" is replaced with the specified potential predictor.
 
+  - #### Functions for Generating Aggregated Variables
+    ```r
+    # Function for computing yearly averages:
+    VAR_AVG_TY = function(var, team_col, var_col) {
+      result = NBA_DATA %>%
+      arrange(DATE) %>%
+      group_by(SEASON, !!sym(team_col)) %>% 
+      mutate(!!sym(var) := rollapplyr(lag(!!sym(var_col)), width = 1:(n()-1), FUN = function(x) mean(x, na.rm =TRUE), fill = NA)) %>%
+      ungroup() %>%
+      select(GAME_ID, !!sym(var))
+      NBA_DATA <<- merge(NBA_DATA, result, by = c("GAME_ID"), all.x=TRUE) 
+      return(result)
+    }
+
+    # Function for computing last 3 game averages:
+    VAR_AVG_L3 = function(var, team_col, var_col) {
+      result = NBA_DATA %>%
+      arrange(DATE) %>%
+      group_by(SEASON, !!sym(team_col)) %>% 
+      mutate(!!sym(var) := ifelse(row_number() > 3, lag(rollapply((!!sym(var_col)), width = 3, FUN = mean, na.rm = TRUE, fill = NA, align = "right", partial = TRUE), n = 1),          NA))   %>%
+      ungroup() %>%
+      select(GAME_ID, !!sym(var)) 
+      NBA_DATA <<- merge(NBA_DATA, result, by = c("GAME_ID"), all.x=TRUE) 
+      return(result)
+    }
+    ```
+  - #### Example Usage: Generating Aggregated Variables for PTS
+    ```r
+    VAR_AVG_TY("AVG_PPG_TY_H", "TEAM_H", "PTS_home")
+    VAR_AVG_TY("AVG_OPPG_TY_H", "TEAM_H", "PTS_away")
+    VAR_AVG_L3("AVG_PPG_L3_H", "TEAM_H", "PTS_home") 
+    VAR_AVG_L3("AVG_OPPG_L3_H", "TEAM_H", "PTS_away")
+
+    VAR_AVG_TY("AVG_PPG_TY_A", "TEAM_A", "PTS_away")
+    VAR_AVG_TY("AVG_OPPG_TY_A", "TEAM_A", "PTS_home")
+    VAR_AVG_L3("AVG_PPG_L3_A", "TEAM_A", "PTS_away") 
+    VAR_AVG_L3("AVG_OPPG_L3_A", "TEAM_A", "PTS_home")
+    ```
+
 - #### Additional Data Source
   In addition to our primary dataset, we collected supplementary data from [teamrankings.com](https://www.teamrankings.com/nba/team-stats/). This dataset encompasses NBA team data for each date of the 2022-2023 season. Specifically, it includes comprehensive data for all of our selected potential predictors, categorized by team and providing the following metrics:
   - Yearly average
@@ -79,13 +118,26 @@ Our search for data started with Nathan Lauga's [games](https://www.kaggle.com/d
   - Away game average
   - Previous year average
 
-  After the games of April 2, 2023, the updated data from teamrankings.com was used to calculate our predictions for the games scheduled from April 4 to April 9.
+  After the April 2, 2023 games, the updated data from teamrankings.com was used to calculate our predictions for the games scheduled from April 4 to April 9.
 
 ### Predictive Modeling
 
 The following steps provide an overview of the methodology used to create predictive models for Spread, Total, and OREB:
 
-1. **Data Splitting**: The cleaned data was divided into training and testing sets. The training data consisted of all games that occurred in February or March, while the testing data included all games in April. The data was split this way to ensure the models could properly predict April games after being trained to predict games in February and March, since the game outcomes being predicted in this project are those occurring in April. (ADD CODE)
+1. **Data Splitting**: The cleaned data was divided into training and testing sets. The training data consisted of all games that occurred in February or March, while the testing data included all games in April. The data was split this way to ensure the models could properly predict April games after being trained to predict games in February and March, since the game outcomes being predicted in this project are those occurring in April.
+    ```r
+    # Separate "DATE" variable into "year", "month", and "day" variables:
+    NBA_DATA = NBA_DATA %>%
+      separate(DATE, sep="-", into = c("year","month","day"))
+
+    # Create training set, consisting of February and March games
+    TRAIN_DATA = NBA_DATA %>%
+      filter(month == "02" | month == "03")
+
+    # Create testing set, consisting of April games
+    TEST_DATA = NBA_DATA %>%
+      filter(month == "04")
+    ```
 2. **Bi-directional Stepwise Progression**: We applied bi-directional stepwise progression on the training set to identify potential independent variables. All non-aggregate variables were considered as potential predictors.
 3. **Cross-validation and Model Evaluation**: The model identified in step 2 was cross-validated on the testing data to ensure accurate predictions. We analyzed the mean, variability, and normality conditions to assess the model's performance. Additionally, the shrinkage value was closely examined to ensure model reliability.
 4. **Refinement with Aggregate Variables**: Bi-directional stepwise progression was applied again, this time using aggregate values for the variables identified as good predictors in the previous step. Outliers were checked by analyzing studentized and standardized residuals, leverage values, and Cook's distance. After ensuring no significant outliers, the model was cross-validated to assess its accuracy in predicting the testing data.
