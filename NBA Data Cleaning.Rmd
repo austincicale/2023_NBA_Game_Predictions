@@ -32,7 +32,6 @@ games <- na.omit(games)
 games_details = read_csv("/Users/austincicale/Desktop/games_details.csv")
 ```
 
-
 ```{r}
 # Remove unnecessary variables from "games_details"
 games_details = select(games_details, "GAME_ID", "TEAM_ID", "FGA", "FG3A", "FTA", "OREB", "STL", "BLK", "TO", "PF")
@@ -109,7 +108,7 @@ NBA_DATA = NBA_DATA %>%
 NBA_DATA = NBA_DATA %>%
    filter(!(year %in% c(2020, 2021)))
 
-# Remove observations before February to account for post-trade deadline
+# Remove observations before February to account for the post-trade deadline
 NBA_DATA = filter(NBA_DATA, month %in% c(2, 3, 4))
 
 # Remove playoff game data
