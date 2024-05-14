@@ -15,8 +15,6 @@ library(tidyr)
 games = read_csv("/Users/austincicale/Desktop/games.csv")
 ```
 
-
-
 ```{r}
 # Remove unessential variables from "games"
 games = select(games, -"GAME_STATUS_TEXT", -"HOME_TEAM_WINS", - "TEAM_ID_home", - "TEAM_ID_away")
@@ -36,7 +34,7 @@ games_details = read_csv("/Users/austincicale/Desktop/games_details.csv")
 
 
 ```{r}
-# Remove unessentiial variables from "games_details"
+# Remove unnecessary variables from "games_details"
 games_details = select(games_details, "GAME_ID", "TEAM_ID", "FGA", "FG3A", "FTA", "OREB", "STL", "BLK", "TO", "PF")
 
 # Remove NA observations
