@@ -1,0 +1,394 @@
+---
+title: "NBA Data Cleaning"
+author: "Austin Cicale"
+output: html_document
+---
+
+```{r}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(zoo)
+library(rlang)
+```
+
+```{r}
+# Load "games" Dataset
+games = read_csv("/Users/austincicale/Desktop/games.csv")
+```
+
+
+
+```{r}
+# Remove unessential variables from "games"
+games = select(games, -"GAME_STATUS_TEXT", -"HOME_TEAM_WINS", - "TEAM_ID_home", - "TEAM_ID_away")
+
+# Create Total and Spread outcome variables
+games$Total = games$PTS_home + games$PTS_away
+games$Spread = games$PTS_home - games$PTS_away
+
+# Remove NA observations
+games <- na.omit(games)
+```
+
+```{r}
+# Load "games_details" Dataset
+games_details = read_csv("/Users/austincicale/Desktop/games_details.csv")
+```
+
+
+```{r}
+# Remove unessentiial variables from "games_details"
+games_details = select(games_details, "GAME_ID", "TEAM_ID", "FGA", "FG3A", "FTA", "OREB", "STL", "BLK", "TO", "PF")
+
+# Remove NA observations
+games_details <- na.omit(games_details)
+```
+
+```{r}
+# Convert "games_details" player-level observations to team-level observations
+FGA = aggregate(FGA~GAME_ID + TEAM_ID, games_details, sum)
+FG3A = aggregate(FG3A~GAME_ID + TEAM_ID, games_details, sum)
+FTA = aggregate(FTA~GAME_ID + TEAM_ID, games_details, sum)
+OREB = aggregate(OREB~GAME_ID + TEAM_ID, games_details, sum)
+STL = aggregate(STL~GAME_ID + TEAM_ID, games_details, sum)
+BLK = aggregate(BLK~GAME_ID + TEAM_ID, games_details, sum)
+TO = aggregate(TO~GAME_ID + TEAM_ID, games_details, sum)
+PF = aggregate(PF~GAME_ID + TEAM_ID, games_details, sum)
+```
+
+```{r}
+# Merge "games_details" into "games" dataset by matching GAME_ID and TEAM_ID (Home Teams)
+
+NBA_DATA = rename(games, TEAM_ID = HOME_TEAM_ID)
+
+NBA_DATA = merge(NBA_DATA, FGA, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)  
+NBA_DATA = merge(NBA_DATA, FG3A, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)
+NBA_DATA = merge(NBA_DATA, FTA, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)
+NBA_DATA = merge(NBA_DATA, OREB, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)
+NBA_DATA = merge(NBA_DATA, STL, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)
+NBA_DATA = merge(NBA_DATA, BLK, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)
+NBA_DATA = merge(NBA_DATA, TO, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)
+NBA_DATA = merge(NBA_DATA, PF, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)
+
+NBA_DATA = rename(NBA_DATA, FGA_H = FGA, FG3A_H = FG3A, FTA_H = FTA, OREB_H = OREB, STL_H = STL, BLK_H = BLK, TO_H = TO, PF_H = PF)
+
+NBA_DATA = rename(NBA_DATA, HOME_TEAM_ID = TEAM_ID)
+
+# Merge "games_details" into "games" dataset by matching GAME_ID and TEAM_ID (Away Teams)
+
+NBA_DATA = rename(NBA_DATA, TEAM_ID = VISITOR_TEAM_ID)
+
+NBA_DATA = merge(NBA_DATA, FGA, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)  
+NBA_DATA = merge(NBA_DATA, FG3A, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)
+NBA_DATA = merge(NBA_DATA, FTA, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)
+NBA_DATA = merge(NBA_DATA, OREB, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)
+NBA_DATA = merge(NBA_DATA, STL, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)
+NBA_DATA = merge(NBA_DATA, BLK, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)
+NBA_DATA = merge(NBA_DATA, TO, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)
+NBA_DATA = merge(NBA_DATA, PF, by = c("TEAM_ID","GAME_ID"), all.x=TRUE)
+
+NBA_DATA = rename(NBA_DATA, FGA_A = FGA, FG3A_A = FG3A, FTA_A = FTA, OREB_A = OREB, STL_A = STL, BLK_A = BLK, TO_A = TO, PF_A = PF)
+
+NBA_DATA = rename(NBA_DATA, VISITOR_TEAM_ID = TEAM_ID)
+```
+
+```{r}
+# Create OREB outcome variable
+NBA_DATA$OREB = NBA_DATA$OREB_H + NBA_DATA$OREB_A
+```
+
+
+```{r}
+# Create Field Goals Made (FGM) variables
+NBA_DATA$FGM_H = NBA_DATA$FGA_H * NBA_DATA$FG_PCT_home
+NBA_DATA$FGM_A = NBA_DATA$FGA_A * NBA_DATA$FG_PCT_away
+
+# Create Three-Point Field Goals Made (FG3M) variables
+NBA_DATA$FG3M_H = NBA_DATA$FG3A_H * NBA_DATA$FG3_PCT_home
+NBA_DATA$FG3M_A = NBA_DATA$FG3A_A * NBA_DATA$FG3_PCT_away
+
+# Create Defensive Rebounds (DREB) variables
+NBA_DATA$DREB_H = NBA_DATA$REB_home - NBA_DATA$OREB_H
+NBA_DATA$DREB_A = NBA_DATA$REB_away - NBA_DATA$OREB_A
+
+# Create Possessions (POSS) variables
+NBA_DATA$POSS_H = 0.96 * (NBA_DATA$FGA_H + NBA_DATA$TO_H + 0.44 * NBA_DATA$FTA_H - NBA_DATA$OREB_H)
+NBA_DATA$POSS_A = 0.96 * (NBA_DATA$FGA_A + NBA_DATA$TO_A + 0.44 * NBA_DATA$FTA_A - NBA_DATA$OREB_A)
+
+# Create Effective Field Goal Percentage (eFG_PCT) variables
+NBA_DATA$eFG_PCT_H = (NBA_DATA$FGM_H + 0.5 * NBA_DATA$FG3M_H) / NBA_DATA$FGA_H 
+NBA_DATA$eFG_PCT_A = (NBA_DATA$FGM_A + 0.5 * NBA_DATA$FG3M_A) / NBA_DATA$FGA_A
+
+# Create Turnover Percentage (TO_PCT) variables
+NBA_DATA$TO_PCT_H = NBA_DATA$TO_H  / NBA_DATA$POSS_H 
+NBA_DATA$TO_PCT_A = NBA_DATA$TO_A  / NBA_DATA$POSS_A
+
+# Create Defensive Rebound Percentage (DREB_PCT) variables
+NBA_DATA$DREB_PCT_H = NBA_DATA$DREB_H  / (NBA_DATA$DREB_H + NBA_DATA$OREB_A)
+NBA_DATA$DREB_PCT_A = NBA_DATA$DREB_A  / (NBA_DATA$DREB_A + NBA_DATA$OREB_H)
+```
+
+```{r}
+ranking = read_csv("/Users/austincicale/Downloads/ARCHIVE1/ranking.csv")
+```
+
+```{r}
+# Merge win percentage (W_PCT) and TEAM variables from "ranking" to "NBA_DATA" by matching TEAM_ID and the date
+ranking = ranking %>%
+  rename(GAME_DATE_EST = STANDINGSDATE) %>%
+  select("GAME_DATE_EST", "TEAM_ID", "TEAM", "W_PCT")
+
+# Home teams
+NBA_DATA = rename(NBA_DATA, TEAM_ID = HOME_TEAM_ID)
+NBA_DATA = merge(NBA_DATA, ranking, by = c("TEAM_ID","GAME_DATE_EST"), all.x=TRUE)
+NBA_DATA = rename(NBA_DATA, W_PCT_H = W_PCT, TEAM_H = TEAM)
+NBA_DATA = rename(NBA_DATA, HOME_TEAM_ID = TEAM_ID)
+
+
+# Away teams
+NBA_DATA = rename(NBA_DATA, TEAM_ID = VISITOR_TEAM_ID)
+NBA_DATA = merge(NBA_DATA, ranking, by = c("TEAM_ID","GAME_DATE_EST"), all.x=TRUE)
+NBA_DATA = rename(NBA_DATA, W_PCT_A = W_PCT, TEAM_A = TEAM)
+NBA_DATA = rename(NBA_DATA, VISITOR_TEAM_ID = TEAM_ID)
+```
+
+```{r}
+# Refining NBA_DATA to remove redundant/unessential potential predictors
+NBA_DATA = select(NBA_DATA, -c(7,9,11,13,15,17,20,21,23,26,28,29,31,34,37:42))
+
+# Separate the Date into Year, Month, and Day
+NBA_DATA <- NBA_DATA %>%
+  mutate(year = as.numeric(substring(GAME_DATE_EST, 1, 4)),
+         month = as.numeric(substring(GAME_DATE_EST, 6, 7)),
+         day = as.numeric(substring(GAME_DATE_EST, 9, 10)))
+
+# Remove data before the 2010 NBA Season
+NBA_DATA = NBA_DATA %>%
+  filter(year > 2009 | (year == 2009 & month >= 07))
+
+# Remove data from the 2020 and 2021 NBA seasons
+NBA_DATA = NBA_DATA %>%
+   filter(!(year %in% c(2020, 2021)))
+
+# Remove playoff game data
+NBA_DATA = NBA_DATA %>%
+  filter(!(year == 2010 & (month == 4 & day > 16)) &
+         !(year == 2011 & (month == 4 & day > 15)) &
+         !(year == 2012 & (month == 4 & day > 27)) &
+         !(year == 2013 & (month == 4 & day > 19)) &
+         !(year == 2014 & (month == 4 & day > 18)) &
+         !(year == 2015 & (month == 4 & day > 17)) &
+         !(year == 2016 & (month == 4 & day > 15)) &
+         !(year == 2017 & (month == 4 & day > 14)) &
+         !(year == 2018 & (month == 4 & day > 13)) &
+         !(year == 2019 & (month == 4 & day > 12)) &
+         !(year == 2022 & (month == 4 & day > 15))) 
+```
+
+```{r}
+# Function for creating lag variables for season average
+VAR_AVG_TY = function(var, team_col, var_col) {
+  result = NBA_DATA %>%
+  arrange(GAME_DATE_EST) %>%
+  group_by(SEASON, !!sym(team_col)) %>% 
+  mutate(!!sym(var) := rollapplyr(lag(!!sym(var_col)), width = 1:(n()-1), FUN = function(x) mean(x, na.rm =TRUE), fill = NA)) %>%
+  ungroup() %>%
+  select(GAME_ID, !!sym(var))
+  NBA_DATA <<- merge(NBA_DATA, result, by = c("GAME_ID"), all.x=TRUE) 
+  return(result)
+}
+
+# Function for creating lag variables for last 3 games
+VAR_AVG_L3 = function(var, team_col, var_col) {
+  result = NBA_DATA %>%
+  arrange(GAME_DATE_EST) %>%
+  group_by(SEASON, !!sym(team_col)) %>% 
+  mutate(!!sym(var) := ifelse(row_number() > 3, lag(rollapply((!!sym(var_col)), width = 3, FUN = mean, na.rm = TRUE, fill = NA, align =   "right", partial = TRUE), n = 1), NA)) %>%
+  ungroup() %>%
+  select(GAME_ID, !!sym(var)) 
+  NBA_DATA <<- merge(NBA_DATA, result, by = c("GAME_ID"), all.x=TRUE) 
+  return(result)
+}
+```
+
+PTS Lag Variables:
+```{r}
+VAR_AVG_TY("AVG_PPG_TY_H", "TEAM_H", "PTS_home")
+VAR_AVG_TY("AVG_OPPG_TY_H", "TEAM_H", "PTS_away")
+VAR_AVG_L3("AVG_PPG_L3_H", "TEAM_H", "PTS_home") 
+VAR_AVG_L3("AVG_OPPG_L3_H", "TEAM_H", "PTS_away")
+
+VAR_AVG_TY("AVG_PPG_TY_A", "TEAM_A", "PTS_away")
+VAR_AVG_TY("AVG_OPPG_TY_A", "TEAM_A", "PTS_home")
+VAR_AVG_L3("AVG_PPG_L3_A", "TEAM_A", "PTS_away") 
+VAR_AVG_L3("AVG_OPPG_L3_A", "TEAM_A", "PTS_home")
+```
+
+AST Lag Variables:
+```{r}
+VAR_AVG_TY("AVG_APG_TY_H", "TEAM_H", "AST_home")
+VAR_AVG_TY("AVG_OAPG_TY_H", "TEAM_H", "AST_away")
+VAR_AVG_L3("AVG_APG_L3_H", "TEAM_H", "AST_home") 
+VAR_AVG_L3("AVG_OAPG_L3_H", "TEAM_H", "AST_away")
+
+VAR_AVG_TY("AVG_APG_TY_A", "TEAM_A", "AST_away")
+VAR_AVG_TY("AVG_OAPG_TY_A", "TEAM_A", "AST_home")
+VAR_AVG_L3("AVG_APG_L3_A", "TEAM_A", "AST_away") 
+VAR_AVG_L3("AVG_OAPG_L3_A", "TEAM_A", "AST_home")
+```
+
+STL Lag Variables:
+```{r}
+VAR_AVG_TY("AVG_SPG_TY_H", "TEAM_H", "STL_H")
+VAR_AVG_TY("AVG_OSPG_TY_H", "TEAM_H", "STL_A")
+VAR_AVG_L3("AVG_SPG_L3_H", "TEAM_H", "STL_H") 
+VAR_AVG_L3("AVG_OSPG_L3_H", "TEAM_H", "STL_A")
+
+VAR_AVG_TY("AVG_SPG_TY_A", "TEAM_A", "STL_A")
+VAR_AVG_TY("AVG_OSPG_TY_A", "TEAM_A", "STL_H")
+VAR_AVG_L3("AVG_SPG_L3_A", "TEAM_A", "STL_A") 
+VAR_AVG_L3("AVG_OSPG_L3_A", "TEAM_A", "STL_H")
+```
+
+BLK Lag Variables:
+```{r}
+VAR_AVG_TY("AVG_BPG_TY_H", "TEAM_H", "BLK_H")
+VAR_AVG_TY("AVG_OBPG_TY_H", "TEAM_H", "BLK_A")
+VAR_AVG_L3("AVG_BPG_L3_H", "TEAM_H", "BLK_H") 
+VAR_AVG_L3("AVG_OBPG_L3_H", "TEAM_H", "BLK_A")
+
+VAR_AVG_TY("AVG_BPG_TY_A", "TEAM_A", "BLK_A")
+VAR_AVG_TY("AVG_OBPG_TY_A", "TEAM_A", "BLK_H")
+VAR_AVG_L3("AVG_BPG_L3_A", "TEAM_A", "BLK_A") 
+VAR_AVG_L3("AVG_OBPG_L3_A", "TEAM_A", "BLK_H")
+```
+
+PF Lag Variables:
+```{r}
+VAR_AVG_TY("AVG_PF_PG_TY_H", "TEAM_H", "PF_H")
+VAR_AVG_TY("AVG_OPF_PG_TY_H", "TEAM_H", "PF_A")
+VAR_AVG_L3("AVG_PF_PG_L3_H", "TEAM_H", "PF_H") 
+VAR_AVG_L3("AVG_OPF_PG_L3_H", "TEAM_H", "PF_A")
+
+VAR_AVG_TY("AVG_PF_PG_TY_A", "TEAM_A", "PF_A")
+VAR_AVG_TY("AVG_OPF_PG_TY_A", "TEAM_A", "PF_H")
+VAR_AVG_L3("AVG_PF_PG_L3_A", "TEAM_A", "PF_A") 
+VAR_AVG_L3("AVG_OPF_PG_L3_A", "TEAM_A", "PF_H")
+```
+
+W_PCT Lag Variables:
+```{r}
+VAR_AVG_TY("AVG_W_PCT_TY_H", "TEAM_H", "W_PCT_H")
+VAR_AVG_TY("AVG_OW_PCT_TY_H", "TEAM_H", "W_PCT_A")
+VAR_AVG_L3("AVG_W_PCT_L3_H", "TEAM_H", "W_PCT_H") 
+VAR_AVG_L3("AVG_OW_PCT_L3_H", "TEAM_H", "W_PCT_A")
+
+VAR_AVG_TY("AVG_W_PCT_TY_A", "TEAM_A", "W_PCT_A")
+VAR_AVG_TY("AVG_OW_PCT_TY_A", "TEAM_A", "W_PCT_H")
+VAR_AVG_L3("AVG_W_PCT_L3_A", "TEAM_A", "W_PCT_A") 
+VAR_AVG_L3("AVG_OW_PCT_L3_A", "TEAM_A", "W_PCT_H")
+```
+
+FT_PCT Lag Variables:
+```{r}
+VAR_AVG_TY("AVG_FT_PCT_PG_TY_H", "TEAM_H", "FT_PCT_home")
+VAR_AVG_TY("AVG_OFT_PCT_PG_H", "TEAM_H", "FT_PCT_away")
+VAR_AVG_L3("AVG_FT_PCT_PG_L3_H", "TEAM_H", "FT_PCT_home") 
+VAR_AVG_L3("AVG_OFT_PCT_PG_L3_H", "TEAM_H", "FT_PCT_away")
+
+VAR_AVG_TY("AVG_FT_PCT_PG_TY_A", "TEAM_A", "FT_PCT_away")
+VAR_AVG_TY("AVG_OFT_PCT_PG_TY_A", "TEAM_A", "FT_PCT_home")
+VAR_AVG_L3("AVG_FT_PCT_PG_L3_A", "TEAM_A", "FT_PCT_away") 
+VAR_AVG_L3("AVG_OFT_PCT_PG_L3_A", "TEAM_A", "FT_PCT_home")
+```
+
+DREB_PCT Lag Variables:
+```{r}
+VAR_AVG_TY("AVG_DREB_PCT_PG_TY_H", "TEAM_H", "DREB_PCT_H")
+VAR_AVG_TY("AVG_ODREB_PCT_PG_TY_H", "TEAM_H", "DREB_PCT_A")
+VAR_AVG_L3("AVG_DREB_PCT_PG_L3_H", "TEAM_H", "DREB_PCT_H") 
+VAR_AVG_L3("AVG_ODREB_PCT_PG_L3_H", "TEAM_H", "DREB_PCT_A")
+
+VAR_AVG_TY("AVG_DREB_PCT_PG_TY_A", "TEAM_A", "DREB_PCT_A")
+VAR_AVG_TY("AVG_ODREB_PCT_PG_TY_A", "TEAM_A", "DREB_PCT_H")
+VAR_AVG_L3("AVG_DREB_PCT_PG_L3_A", "TEAM_A", "DREB_PCT_A") 
+VAR_AVG_L3("AVG_ODREB_PCT_PG_L3_A", "TEAM_A", "DREB_PCT_H")
+```
+
+FTA Lag Variables:
+```{r}
+VAR_AVG_TY("AVG_FTA_PG_TY_H", "TEAM_H", "FTA_H")
+VAR_AVG_TY("AVG_OFTA_PG_TY_H", "TEAM_H", "FTA_A")
+VAR_AVG_L3("AVG_FTA_PG_L3_H", "TEAM_H", "FTA_H") 
+VAR_AVG_L3("AVG_OFTA_PG_L3_H", "TEAM_H", "FTA_A")
+
+VAR_AVG_TY("AVG_FTA_PG_TY_A", "TEAM_A", "FTA_A")
+VAR_AVG_TY("AVG_OFTA_PG_TY_A", "TEAM_A", "FTA_H")
+VAR_AVG_L3("AVG_FTA_PG_L3_A", "TEAM_A", "FTA_A") 
+VAR_AVG_L3("AVG_OFTA_PG_L3_A", "TEAM_A", "FTA_H") 
+```
+
+TO_PCT Lag Variables:
+```{r}
+VAR_AVG_TY("AVG_TO_PCT_PG_TY_H", "TEAM_H", "TO_PCT_H")
+VAR_AVG_TY("AVG_OTO_PCT_PG_TY_H", "TEAM_H", "TO_PCT_A")
+VAR_AVG_L3("AVG_TO_PCT_PG_L3_H", "TEAM_H", "TO_PCT_H") 
+VAR_AVG_L3("AVG_OTO_PCT_PG_L3_H", "TEAM_H", "TO_PCT_A")
+
+VAR_AVG_TY("AVG_TO_PCT_PG_TY_A", "TEAM_A", "TO_PCT_A")
+VAR_AVG_TY("AVG_OTO_PCT_PG_TY_A", "TEAM_A", "TO_PCT_H")
+VAR_AVG_L3("AVG_TO_PCT_PG_L3_A", "TEAM_A", "TO_PCT_A") 
+VAR_AVG_L3("AVG_OTO_PCT_PG_L3_A", "TEAM_A", "TO_PCT_H") 
+```
+
+POSS Lag Variables:
+```{r}
+VAR_AVG_TY("AVG_POSS_PG_TY_H", "TEAM_H", "POSS_H")
+VAR_AVG_TY("AVG_OPOSS_PG_TY_H", "TEAM_H", "POSS_A")
+VAR_AVG_L3("AVG_POSS_PG_L3_H", "TEAM_H", "POSS_H") 
+VAR_AVG_L3("AVG_OPOSS_PG_L3_H", "TEAM_H", "POSS_A")
+
+VAR_AVG_TY("AVG_POSS_PG_TY_A", "TEAM_A", "POSS_A")
+VAR_AVG_TY("AVG_OPOSS_PG_TY_A", "TEAM_A", "POSS_H")
+VAR_AVG_L3("AVG_POSS_PG_L3_A", "TEAM_A", "POSS_A") 
+VAR_AVG_L3("AVG_OPOSS_PG_L3_A", "TEAM_A", "POSS_H") 
+```
+
+eFG_PCT Lag Variables:
+```{r}
+VAR_AVG_TY("AVG_eFG_PCT_PG_TY_H", "TEAM_H", "eFG_PCT_H")
+VAR_AVG_TY("AVG_OeFG_PCT_PG_TY_H", "TEAM_H", "eFG_PCT_A")
+VAR_AVG_L3("AVG_eFG_PCT_PG_L3_H", "TEAM_H", "eFG_PCT_H") 
+VAR_AVG_L3("AVG_OeFG_PCT_PG_L3_H", "TEAM_H", "eFG_PCT_A")
+
+VAR_AVG_TY("AVG_eFG_PCT_PG_TY_A", "TEAM_A", "eFG_PCT_A")
+VAR_AVG_TY("AVG_OeFG_PCT_PG_TY_A", "TEAM_A", "eFG_PCT_H")
+VAR_AVG_L3("AVG_eFG_PCT_PG_L3_A", "TEAM_A", "eFG_PCT_A") 
+VAR_AVG_L3("AVG_OeFG_PCT_PG_L3_A", "TEAM_A", "eFG_PCT_H") 
+```
+
+
+```{r}
+# Remove observations before February to account for post-trade deadline
+NBA_DATA = filter(NBA_DATA, month %in% c(2, 3, 4))
+```
+
+```{r}
+# Create dataset only including aggregate predictor variables
+NBA_LAG_DATA = select(NBA_DATA, -c(6:11,14:21,23:30,32,34:37)) 
+```
+
+```{r}
+write.csv(NBA_LAG_DATA, "NBA_LAG_DATA.csv", row.names = FALSE)
+```
+
+```{r}
+# Filter dataset to only include pre-aggregate predictor variables
+NBA_DATA = select(NBA_DATA, c(1:34))
+```
+
+```{r}
+write.csv(NBA_DATA, "NBA_DATA.csv", row.names = FALSE)
+```
+
